@@ -80,27 +80,34 @@
       <div class="message sent">I'm good, thanks! How about you?</div>
       <!-- More messages can be added here -->
     </div>
-    <div class="input-container">
-      <input type="text" placeholder="Type your message...">
-      <button>Send</button>
-    </div>
+    <form id="form" action="" class="input-container">
+      <input id="input" autocomplete="off"/><button>Send</button>
+   </form>
   </div>
-
+  <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io(); // Connect to the server
 
-  // Send a message
-  document.querySelector('button').addEventListener('click', () => {
-    const message = document.querySelector('input').value;
-    socket.emit('chat message', message);
-  });
-
-  // Receive a message
-  socket.on('chat message', (message) => {
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    document.querySelector('.chat-messages').appendChild(messageDiv);
-  });
+document.getElementById('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('input');
+    if (input.value) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.classList.add('sent');
+      messageDiv.textContent = input.value;
+      document.querySelector('.chat-messages').appendChild(messageDiv);
+      socket.emit('chat message', input.value);
+      input.value = '';
+    }
+});
+// Receive a message
+socket.on('chat message', (message) => {
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('message');
+  messageDiv.textContent = message;
+  document.querySelector('.chat-messages').appendChild(messageDiv);
+});
 </script>
 
 </body>
